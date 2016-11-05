@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -65,6 +66,13 @@ public class Hardware
 
         wr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         wl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // Set motor direction
+        fr.setDirection(DcMotor.Direction.REVERSE);
+        fl.setDirection(DcMotor.Direction.FORWARD);
+        br.setDirection(DcMotor.Direction.REVERSE);
+        bl.setDirection(DcMotor.Direction.FORWARD);
+
 
         // Define and initialize ALL installed servos.
         push = hwMap.servo.get("push_servo");

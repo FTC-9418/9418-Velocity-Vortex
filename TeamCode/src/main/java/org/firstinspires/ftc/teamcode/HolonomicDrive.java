@@ -34,6 +34,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 /**
  * This file provides basic Telop driving for a Holonomic drivetrain robot.
@@ -96,30 +98,40 @@ public class HolonomicDrive extends OpMode{
         double x; // Right/ Left Movement
         double y; // Forward/ Backward movement
         double z; // Used for turning
-
         x = -gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
         z = -gamepad1.right_stick_x;
+
         if(y >= 0.5) {
             robot.fr.setPower(0.5);
             robot.fl.setPower(0.5);
             robot.br.setPower(0.5);
             robot.bl.setPower(0.5);
-        } else if(y <= 0.5) {
-            robot.fr.setPower(0.5);
-            robot.fl.setPower(0.5);
-            robot.br.setPower(0.5);
-            robot.bl.setPower(0.5);
+        } else if(y <= -0.5) {
+            robot.fr.setPower(-0.5);
+            robot.fl.setPower(-0.5);
+            robot.br.setPower(-0.5);
+            robot.bl.setPower(-0.5);
         } else if(x >= 0.5) {
             robot.fr.setPower(0.5);
             robot.fl.setPower(0.5);
+            robot.br.setPower(-0.5);
+            robot.bl.setPower(-0.5);
+        } else if(x <= -0.5) {
+            robot.fr.setPower(-0.5);
+            robot.fl.setPower(-0.5);
             robot.br.setPower(0.5);
             robot.bl.setPower(0.5);
-        } else if(x <= 0.5) {
-            robot.fr.setPower(0.5);
+        } else if(z >= 0.5) {
+            robot.fr.setPower(-0.5);
             robot.fl.setPower(0.5);
-            robot.br.setPower(0.5);
+            robot.br.setPower(-0.5);
             robot.bl.setPower(0.5);
+        } else if(z <= -0.5) {
+            robot.fr.setPower(0.5);
+            robot.fl.setPower(-0.5);
+            robot.br.setPower(0.5);
+            robot.bl.setPower(-0.5);
         } else {
             robot.fr.setPower(0);
             robot.fl.setPower(0);
@@ -131,11 +143,11 @@ public class HolonomicDrive extends OpMode{
     public void winch(){
         // Use gamepad buttons to move the arm up (Y) and down (A)
         if (gamepad1.y) {
-            robot.wl.setPower(0.25);
-            robot.wr.setPower(0.25);
+            robot.wl.setPower(1);
+            robot.wr.setPower(1);
         } else if (gamepad1.a) {
-            robot.wl.setPower(-0.25);
-            robot.wr.setPower(-0.25);
+            robot.wl.setPower(-1);
+            robot.wr.setPower(-1);
         } else {
             robot.wl.setPower(0);
             robot.wr.setPower(0);
