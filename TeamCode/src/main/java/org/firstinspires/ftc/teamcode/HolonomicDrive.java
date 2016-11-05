@@ -114,14 +114,14 @@ public class HolonomicDrive extends OpMode{
             robot.bl.setPower(-0.5);
         } else if(x >= 0.5) {
             robot.fr.setPower(0.5);
-            robot.fl.setPower(0.5);
+            robot.fl.setPower(-0.5);
             robot.br.setPower(-0.5);
-            robot.bl.setPower(-0.5);
+            robot.bl.setPower(0.5);
         } else if(x <= -0.5) {
             robot.fr.setPower(-0.5);
-            robot.fl.setPower(-0.5);
+            robot.fl.setPower(0.5);
             robot.br.setPower(0.5);
-            robot.bl.setPower(0.5);
+            robot.bl.setPower(-0.5);
         } else if(z >= 0.5) {
             robot.fr.setPower(-0.5);
             robot.fl.setPower(0.5);
