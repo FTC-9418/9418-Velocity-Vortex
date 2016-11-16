@@ -32,10 +32,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+
+import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+
 
 /**
  * This file provides basic Telop driving for a Holonomic drivetrain robot.
@@ -67,7 +69,7 @@ public class HolonomicDrive extends OpMode{
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
-        telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
+        //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
     }
 
     /*
@@ -92,6 +94,7 @@ public class HolonomicDrive extends OpMode{
         drive();
         winch();
         push();
+        color();
     }
 
     public void drive(){
@@ -123,15 +126,15 @@ public class HolonomicDrive extends OpMode{
             robot.br.setPower(0.5);
             robot.bl.setPower(-0.5);
         } else if(z >= 0.5) {
-            robot.fr.setPower(-0.5);
-            robot.fl.setPower(0.5);
-            robot.br.setPower(-0.5);
-            robot.bl.setPower(0.5);
-        } else if(z <= -0.5) {
             robot.fr.setPower(0.5);
             robot.fl.setPower(-0.5);
             robot.br.setPower(0.5);
             robot.bl.setPower(-0.5);
+        } else if(z <= -0.5) {
+            robot.fr.setPower(-0.5);
+            robot.fl.setPower(0.5);
+            robot.br.setPower(-0.5);
+            robot.bl.setPower(  0.5);
         } else {
             robot.fr.setPower(0);
             robot.fl.setPower(0);
@@ -140,7 +143,7 @@ public class HolonomicDrive extends OpMode{
         }
     }
 
-    public void winch(){
+    public void winch() {
         // Use gamepad buttons to move the arm up (Y) and down (A)
         if (gamepad1.y) {
             robot.wl.setPower(1);
@@ -164,6 +167,23 @@ public class HolonomicDrive extends OpMode{
         }
     }
 
+    public void color() {
+        // hsvValues is an array that will hold the hue, saturation, and value information.
+        float hsvValues[] = {0F,0F,0F};
+
+        // values is a reference to the hsvValues array.
+        final float values[] = hsvValues;
+        // send the info back to driver station using telemetry function.
+
+        //telemetry.addData("LED", bLedOn ? "On" : "Off");
+        Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
+
+        telemetry.addData("Clear", robot.beacon.alpha());
+        telemetry.addData("Red  ", robot.beacon.red());
+        telemetry.addData("Green", robot.beacon.green());
+        telemetry.addData("Blue ", robot.beacon.blue());
+        telemetry.addData("Hue", hsvValues[0]);
+    }
     /*
      * Code to run ONCE after the driver hits STOP
      */

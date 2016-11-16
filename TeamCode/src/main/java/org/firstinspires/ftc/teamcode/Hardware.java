@@ -1,8 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -20,7 +25,8 @@ public class Hardware
     public DcMotor br = null;
     public DcMotor wl = null;
     public DcMotor wr = null;
-    public Servo    push             = null;
+    public Servo push = null;
+    public ColorSensor beacon;
 
     public static final double MID_SERVO =  0.5 ;
 
@@ -77,6 +83,8 @@ public class Hardware
         // Define and initialize ALL installed servos.
         push = hwMap.servo.get("push_servo");
         push.setPosition(MID_SERVO);
+
+        beacon = hwMap.colorSensor.get("beacon");
     }
 
     /***
