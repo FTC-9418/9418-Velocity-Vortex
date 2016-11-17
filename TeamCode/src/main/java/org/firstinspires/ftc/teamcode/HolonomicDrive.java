@@ -67,6 +67,7 @@ public class HolonomicDrive extends OpMode{
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        robot.beacon.enableLed(false);
 
         // Send telemetry message to signify robot waiting;
         //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
@@ -134,7 +135,12 @@ public class HolonomicDrive extends OpMode{
             robot.fr.setPower(-0.5);
             robot.fl.setPower(0.5);
             robot.br.setPower(-0.5);
-            robot.bl.setPower(  0.5);
+            robot.bl.setPower(0.5);
+        } else if(x>=0.5 && y>=0.5) {
+            robot.fr.setPower(0.5);
+            robot.fl.setPower(0);
+            robot.br.setPower(0);
+            robot.bl.setPower(0.5);
         } else {
             robot.fr.setPower(0);
             robot.fl.setPower(0);
@@ -172,17 +178,17 @@ public class HolonomicDrive extends OpMode{
         float hsvValues[] = {0F,0F,0F};
 
         // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
+        //final float values[] = hsvValues;
         // send the info back to driver station using telemetry function.
 
         //telemetry.addData("LED", bLedOn ? "On" : "Off");
         Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
 
-        telemetry.addData("Clear", robot.beacon.alpha());
+        //telemetry.addData("Clear", robot.beacon.alpha());
         telemetry.addData("Red  ", robot.beacon.red());
         telemetry.addData("Green", robot.beacon.green());
         telemetry.addData("Blue ", robot.beacon.blue());
-        telemetry.addData("Hue", hsvValues[0]);
+        //telemetry.addData("Hue", hsvValues[0]);
     }
     /*
      * Code to run ONCE after the driver hits STOP
