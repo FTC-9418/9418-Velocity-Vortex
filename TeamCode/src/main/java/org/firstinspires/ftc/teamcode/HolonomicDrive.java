@@ -67,7 +67,7 @@ public class HolonomicDrive extends OpMode{
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        robot.beacon.enableLed(false);
+        robot.beacon.enableLed(true);
 
         // Send telemetry message to signify robot waiting;
         //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
@@ -99,54 +99,70 @@ public class HolonomicDrive extends OpMode{
     }
 
     public void drive(){
-        double x; // Right/ Left Movement
-        double y; // Forward/ Backward movement
-        double z; // Used for turning
-        x = -gamepad1.left_stick_x;
-        y = -gamepad1.left_stick_y;
-        z = -gamepad1.right_stick_x;
+        double x = -gamepad1.left_stick_x;
+        double y = -gamepad1.left_stick_y;
+        double z = -gamepad1.right_stick_x;
 
+        int dir = Direction_Stop;
         if(y >= 0.5) {
-            robot.fr.setPower(0.5);
-            robot.fl.setPower(0.5);
-            robot.br.setPower(0.5);
-            robot.bl.setPower(0.5);
+            dir |= Direction_Forward;
         } else if(y <= -0.5) {
-            robot.fr.setPower(-0.5);
-            robot.fl.setPower(-0.5);
-            robot.br.setPower(-0.5);
-            robot.bl.setPower(-0.5);
-        } else if(x >= 0.5) {
-            robot.fr.setPower(0.5);
-            robot.fl.setPower(-0.5);
-            robot.br.setPower(-0.5);
-            robot.bl.setPower(0.5);
-        } else if(x <= -0.5) {
-            robot.fr.setPower(-0.5);
-            robot.fl.setPower(0.5);
-            robot.br.setPower(0.5);
-            robot.bl.setPower(-0.5);
-        } else if(z >= 0.5) {
-            robot.fr.setPower(0.5);
-            robot.fl.setPower(-0.5);
-            robot.br.setPower(0.5);
-            robot.bl.setPower(-0.5);
-        } else if(z <= -0.5) {
-            robot.fr.setPower(-0.5);
-            robot.fl.setPower(0.5);
-            robot.br.setPower(-0.5);
-            robot.bl.setPower(0.5);
-        } else if(x>=0.5 && y>=0.5) {
-            robot.fr.setPower(0.5);
-            robot.fl.setPower(0);
-            robot.br.setPower(0);
-            robot.bl.setPower(0.5);
-        } else {
-            robot.fr.setPower(0);
-            robot.fl.setPower(0);
-            robot.br.setPower(0);
-            robot.bl.setPower(0);
+            dir |= Direction_Reverse;
         }
+        if(x >= 0.5) {
+            dir |= Direction_Right;
+        } else if(x <= -0.5) {
+            dir |= Direction_Left;
+        }
+        if(dir == Direction_Stop) {
+            if(z >= 0.5) {
+                dir |= Direction_RotateRight;
+            } else if(z <= -0.5) {
+                dir |= Direction_RotateLeft;
+            }
+        }
+        telemetry.addData("Dir  ", dir);
+        driveRobot(dir);
+    }
+
+    //  Rotate, Left, Right, Back, Forward
+    private final int Direction_Stop = 0;
+    private final int Direction_Forward = 0b00001;
+    private final int Direction_Reverse = 0b00010;
+    private final int Direction_Left    = 0b01000;
+    private final int Direction_Right   = 0b00100;
+    private final int Direction_Rotate   = 0b10000;
+    private final int Direction_RotateLeft  = Direction_Rotate | Direction_Left;
+    private final int Direction_RotateRight = Direction_Rotate| Direction_Right;
+    private final int Direction_ForwardLeft = Direction_Forward | Direction_Left;
+    private final int Direction_ForwardRight = Direction_Forward | Direction_Right;
+    private final int Direction_ReverseLeft = Direction_Reverse | Direction_Left;
+    private final int Direction_ReverseRight = Direction_Reverse | Direction_Right;
+
+    public void driveRobot(int dir){
+
+        switch (dir) {
+            case Direction_Stop: motorPower(0,0,0,0); break;
+            case Direction_Forward: motorPower(0.5,0.5,0.5,0.5); break;
+            case Direction_Reverse: motorPower(-0.5,-0.5,-0.5,-0.5); break;
+            case Direction_Left: motorPower(-0.5,0.5,0.5,-0.5); break;
+            case Direction_Right: motorPower(0.5,-0.5,-0.5,0.5); break;
+            case Direction_RotateRight: motorPower(0.5,-0.5,0.5,-0.5); break;
+            case Direction_RotateLeft: motorPower(-0.5,0.5,-0.5,0.5); break;
+            case Direction_ForwardRight: motorPower(0.5,0,0,0.5); break;
+            case Direction_ForwardLeft: motorPower(0,0.5,0.5,0); break;
+            case Direction_ReverseLeft: motorPower(-0.5,0,0,-0.5); break;
+            case Direction_ReverseRight: motorPower(0,-0.5,-0.5,0); break;
+            default: motorPower(0,0,0,0); break;
+
+        }
+    }
+
+    public void motorPower(double fr, double fl, double br, double bl) {
+        robot.fr.setPower(fr);
+        robot.fl.setPower(fl);
+        robot.br.setPower(br);
+        robot.bl.setPower(bl);
     }
 
     public void winch() {
@@ -184,11 +200,11 @@ public class HolonomicDrive extends OpMode{
         //telemetry.addData("LED", bLedOn ? "On" : "Off");
         Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
 
-        //telemetry.addData("Clear", robot.beacon.alpha());
         telemetry.addData("Red  ", robot.beacon.red());
         telemetry.addData("Green", robot.beacon.green());
         telemetry.addData("Blue ", robot.beacon.blue());
-        //telemetry.addData("Hue", hsvValues[0]);
+        telemetry.addData("Hue", hsvValues[0]);
+        telemetry.update();
     }
     /*
      * Code to run ONCE after the driver hits STOP
