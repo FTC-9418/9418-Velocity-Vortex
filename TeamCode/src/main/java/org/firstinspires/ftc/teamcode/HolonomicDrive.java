@@ -99,7 +99,7 @@ public class HolonomicDrive extends OpMode{
     }
 
     public void drive(){
-        double x = -gamepad1.left_stick_x;
+        double x = gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
         double z = -gamepad1.right_stick_x;
 
@@ -145,14 +145,14 @@ public class HolonomicDrive extends OpMode{
             case Direction_Stop: motorPower(0,0,0,0); break;
             case Direction_Forward: motorPower(0.5,0.5,0.5,0.5); break;
             case Direction_Reverse: motorPower(-0.5,-0.5,-0.5,-0.5); break;
-            case Direction_Left: motorPower(-0.5,0.5,0.5,-0.5); break;
-            case Direction_Right: motorPower(0.5,-0.5,-0.5,0.5); break;
+            case Direction_Right: motorPower(-0.5,0.5,0.5,-0.5); break;
+            case Direction_Left: motorPower(0.5,-0.5,-0.5,0.5); break;
             case Direction_RotateRight: motorPower(0.5,-0.5,0.5,-0.5); break;
             case Direction_RotateLeft: motorPower(-0.5,0.5,-0.5,0.5); break;
-            case Direction_ForwardRight: motorPower(0.5,0,0,0.5); break;
-            case Direction_ForwardLeft: motorPower(0,0.5,0.5,0); break;
-            case Direction_ReverseLeft: motorPower(-0.5,0,0,-0.5); break;
-            case Direction_ReverseRight: motorPower(0,-0.5,-0.5,0); break;
+            case Direction_ForwardLeft: motorPower(0.5,0,0,0.5); break;
+            case Direction_ForwardRight: motorPower(0,0.5,0.5,0); break;
+            case Direction_ReverseRight: motorPower(-0.5,0,0,-0.5); break;
+            case Direction_ReverseLeft: motorPower(0,-0.5,-0.5,0); break;
             default: motorPower(0,0,0,0); break;
 
         }
