@@ -36,7 +36,7 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import com.qualcomm.robotcore.hardware.I2cAddr;
 
 
 /**
@@ -67,7 +67,8 @@ public class HolonomicDrive extends OpMode{
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        robot.beacon.enableLed(true);
+        robot.beacon.enableLed(false);
+        robot.floor.setI2cAddress(new I2cAddr(0x3a));
 
         // Send telemetry message to signify robot waiting;
         //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
@@ -95,7 +96,7 @@ public class HolonomicDrive extends OpMode{
         drive();
         winch();
         push();
-        color();
+        //color();
     }
 
     public void drive(){
@@ -103,66 +104,26 @@ public class HolonomicDrive extends OpMode{
         double y = -gamepad1.left_stick_y;
         double z = -gamepad1.right_stick_x;
 
-        int dir = Direction_Stop;
+        int dir = Hardware.Direction_Stop;
         if(y >= 0.5) {
-            dir |= Direction_Forward;
+            dir |= Hardware.Direction_Forward;
         } else if(y <= -0.5) {
-            dir |= Direction_Reverse;
+            dir |= Hardware.Direction_Reverse;
         }
         if(x >= 0.5) {
-            dir |= Direction_Right;
+            dir |= Hardware.Direction_Right;
         } else if(x <= -0.5) {
-            dir |= Direction_Left;
+            dir |= Hardware.Direction_Left;
         }
-        if(dir == Direction_Stop) {
+        if(dir == Hardware.Direction_Stop) {
             if(z >= 0.5) {
-                dir |= Direction_RotateRight;
+                dir |= Hardware.Direction_RotateRight;
             } else if(z <= -0.5) {
-                dir |= Direction_RotateLeft;
+                dir |= Hardware.Direction_RotateLeft;
             }
         }
-        telemetry.addData("Dir  ", dir);
-        driveRobot(dir);
-    }
 
-    //  Rotate, Left, Right, Back, Forward
-    private final int Direction_Stop = 0;
-    private final int Direction_Forward = 0b00001;
-    private final int Direction_Reverse = 0b00010;
-    private final int Direction_Left    = 0b01000;
-    private final int Direction_Right   = 0b00100;
-    private final int Direction_Rotate   = 0b10000;
-    private final int Direction_RotateLeft  = Direction_Rotate | Direction_Left;
-    private final int Direction_RotateRight = Direction_Rotate| Direction_Right;
-    private final int Direction_ForwardLeft = Direction_Forward | Direction_Left;
-    private final int Direction_ForwardRight = Direction_Forward | Direction_Right;
-    private final int Direction_ReverseLeft = Direction_Reverse | Direction_Left;
-    private final int Direction_ReverseRight = Direction_Reverse | Direction_Right;
-
-    public void driveRobot(int dir){
-
-        switch (dir) {
-            case Direction_Stop: motorPower(0,0,0,0); break;
-            case Direction_Forward: motorPower(0.5,0.5,0.5,0.5); break;
-            case Direction_Reverse: motorPower(-0.5,-0.5,-0.5,-0.5); break;
-            case Direction_Right: motorPower(-0.5,0.5,0.5,-0.5); break;
-            case Direction_Left: motorPower(0.5,-0.5,-0.5,0.5); break;
-            case Direction_RotateRight: motorPower(0.5,-0.5,0.5,-0.5); break;
-            case Direction_RotateLeft: motorPower(-0.5,0.5,-0.5,0.5); break;
-            case Direction_ForwardLeft: motorPower(0.5,0,0,0.5); break;
-            case Direction_ForwardRight: motorPower(0,0.5,0.5,0); break;
-            case Direction_ReverseRight: motorPower(-0.5,0,0,-0.5); break;
-            case Direction_ReverseLeft: motorPower(0,-0.5,-0.5,0); break;
-            default: motorPower(0,0,0,0); break;
-
-        }
-    }
-
-    public void motorPower(double fr, double fl, double br, double bl) {
-        robot.fr.setPower(fr);
-        robot.fl.setPower(fl);
-        robot.br.setPower(br);
-        robot.bl.setPower(bl);
+        robot.drive(dir, 0.5);
     }
 
     public void winch() {
@@ -190,22 +151,42 @@ public class HolonomicDrive extends OpMode{
     }
 
     public void color() {
+
+        if (gamepad1.x) {
+            if (!currentXPress) {
+                isLedOn = !isLedOn;
+                robot.floor.enableLed(isLedOn);
+                currentXPress = true;
+            }
+            currentXPress = true;
+        } else {
+            currentXPress = false;
+        }
+
         // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F,0F,0F};
+        //float hsvValues[] = {0F,0F,0F};
 
         // values is a reference to the hsvValues array.
         //final float values[] = hsvValues;
         // send the info back to driver station using telemetry function.
 
-        //telemetry.addData("LED", bLedOn ? "On" : "Off");
-        Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
+        //Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
+        telemetry.addData("LED", isLedOn ? "On" : "Off");
 
-        telemetry.addData("Red  ", robot.beacon.red());
-        telemetry.addData("Green", robot.beacon.green());
-        telemetry.addData("Blue ", robot.beacon.blue());
-        telemetry.addData("Hue", hsvValues[0]);
+        String red = String.format("%d,%d",robot.beacon.red(),robot.floor.red() );
+        String green = String.format("%d,%d",robot.beacon.green(),robot.floor.green() );
+        String blue = String.format("%d,%d",robot.beacon.blue(),robot.floor.blue() );
+
+        telemetry.addData("Touch ", robot.touch.isPressed());
+        telemetry.addData("Red  ", red);
+        telemetry.addData("Green", green);
+        telemetry.addData("Blue ", blue);
+        //telemetry.addData("Hue", hsvValues[0]);
         telemetry.update();
     }
+
+    private boolean isLedOn = false;
+    private boolean currentXPress = false;
     /*
      * Code to run ONCE after the driver hits STOP
      */
