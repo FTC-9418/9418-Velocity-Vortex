@@ -96,7 +96,7 @@ public class HolonomicDrive extends OpMode{
         drive();
         winch();
         push();
-        //color();
+        color();
     }
 
     public void drive(){

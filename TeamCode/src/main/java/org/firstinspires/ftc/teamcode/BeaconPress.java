@@ -57,11 +57,13 @@ public abstract class BeaconPress extends LinearOpMode {
   private boolean lookForRed = false;
   private int threshold = 3;
   private int searchDirection = Hardware.Direction_Left;
+  private int hitBallDirection = Hardware.Direction_ReverseRight;
 
   public BeaconPress(boolean lookForRed) {
       this.lookForRed = lookForRed;
     if (lookForRed){
       this.searchDirection = Hardware.Direction_Right;
+      this.hitBallDirection = Hardware.Direction_ReverseLeft;
     }
   }
 
@@ -84,7 +86,7 @@ public abstract class BeaconPress extends LinearOpMode {
     telemetry.addData("Mode ", "drive diag");
     telemetry.update();
     robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
-    sleep(3000);
+    sleep(2600);
     findWall(robot);
 
     robot.stop();
@@ -104,13 +106,22 @@ public abstract class BeaconPress extends LinearOpMode {
 
       if (robot.isAnyBeaconLight(threshold)){
         telemetry.addData("Mode ", "Pressing");
+        if (lookForRed){
+          robot.drive(searchDirection, 0.3);
+          sleep(700);
+        }
         pressBeacon(robot);
         presses++;
         if (presses < 2) {
           robot.drive(Hardware.Direction_Reverse, 0.3);
           sleep(200);
           robot.drive(searchDirection, 0.7);
-          sleep(4000);
+          sleep(500);
+        } else if (presses == 2) {
+          robot.drive(hitBallDirection, 0.7);
+          sleep(3000);
+          break;
+
         }
       }
 
@@ -137,7 +148,7 @@ public abstract class BeaconPress extends LinearOpMode {
   }
 
   private void findWall(Hardware robot) {
-    robot.drive(Hardware.Direction_Forward, 0.4);
+    robot.drive(Hardware.Direction_Forward, 0.2);
     while(!robot.touch.isPressed() && opModeIsActive()) {
       telemetry.addData("Mode ", "Find Wall...");
       telemetry.addData("Touch ", robot.touch.isPressed());
@@ -161,11 +172,10 @@ public abstract class BeaconPress extends LinearOpMode {
         robot.push.setPosition(1);
       }
     }
-    robot.drive(Hardware.Direction_Forward, 0.4);
-    sleep(500);
+    findWall(robot);
     robot.stop();
 
-    sleep(2000);
+    sleep(500);
     robot.push.setPosition(0.5);
   }
 

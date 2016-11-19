@@ -98,7 +98,8 @@ public class Hardware
         beacon.enableLed(false);
 
         floor = hwMap.colorSensor.get("floor"); //address 0x3a
-        floor.setI2cAddress(I2cAddr.create7bit(0x3a));
+        //floor.setI2cAddress(I2cAddr.create7bit(0x3a));
+        floor.setI2cAddress(new I2cAddr(0x3a/2));
         floor.enableLed(false);
 
         touch = hwMap.touchSensor.get("Touch Sensor");
