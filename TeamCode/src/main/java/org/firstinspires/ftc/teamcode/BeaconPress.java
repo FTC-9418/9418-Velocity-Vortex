@@ -56,9 +56,13 @@ public abstract class BeaconPress extends LinearOpMode {
 
   private boolean lookForRed = false;
   private int threshold = 3;
+  private int searchDirection = Hardware.Direction_Left;
 
   public BeaconPress(boolean lookForRed) {
       this.lookForRed = lookForRed;
+    if (lookForRed){
+      this.searchDirection = Hardware.Direction_Right;
+    }
   }
 
   @Override
@@ -70,30 +74,29 @@ public abstract class BeaconPress extends LinearOpMode {
     // wait for the start button to be pressed.
     telemetry.addData("Mode ", "waiting...");
     telemetry.update();
-    wiggle(robot, 100);
+    //wiggle(robot, 500);
 
     waitForStart();
 
-    telemetry.addData("Mode ", "drive fwd");
-    telemetry.update();
-    robot.drive(Hardware.Direction_Forward, 0.1);
-    sleep(250);
+
+
 
     telemetry.addData("Mode ", "drive diag");
     telemetry.update();
-    robot.drive(Hardware.Direction_ForwardLeft, 0.05);
-    sleep(1000);
+    robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
+    sleep(3000);
     findWall(robot);
 
     robot.stop();
-    sleep(3000);
 
     // loop and read the RGB data.
     // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
     int presses = 0;
     while (opModeIsActive() && presses < 2)  {
 
-      robot.drive(Hardware.Direction_Left, 0.1);
+      robot.drive(searchDirection, 0.5);
+
+
       telemetry.addData("Mode ", "Search...");
       telemetry.addData("Red ", robot.beacon.red());
       telemetry.addData("Blu ", robot.beacon.blue());
@@ -104,11 +107,16 @@ public abstract class BeaconPress extends LinearOpMode {
         pressBeacon(robot);
         presses++;
         if (presses < 2) {
-          robot.drive(Hardware.Direction_Left, 0.5);
-          sleep(1000);
+          robot.drive(Hardware.Direction_Reverse, 0.3);
+          sleep(200);
+          robot.drive(searchDirection, 0.7);
+          sleep(4000);
         }
       }
 
+      if (!robot.touch.isPressed()){
+        findWall(robot);
+      }
     }
   }
 
@@ -129,7 +137,7 @@ public abstract class BeaconPress extends LinearOpMode {
   }
 
   private void findWall(Hardware robot) {
-    robot.drive(Hardware.Direction_Forward, 0.5);
+    robot.drive(Hardware.Direction_Forward, 0.4);
     while(!robot.touch.isPressed() && opModeIsActive()) {
       telemetry.addData("Mode ", "Find Wall...");
       telemetry.addData("Touch ", robot.touch.isPressed());
@@ -153,11 +161,11 @@ public abstract class BeaconPress extends LinearOpMode {
         robot.push.setPosition(1);
       }
     }
-    robot.drive(Hardware.Direction_Forward, 0.2);
+    robot.drive(Hardware.Direction_Forward, 0.4);
     sleep(500);
     robot.stop();
 
-    sleep(3000);
+    sleep(2000);
     robot.push.setPosition(0.5);
   }
 

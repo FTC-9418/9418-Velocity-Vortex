@@ -33,7 +33,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 
-import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -52,8 +51,8 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
  *
  */
 
-@TeleOp(name="Holonomic Drive", group="Drive")
-public class HolonomicDrive extends OpMode{
+@TeleOp(name="Test Drive", group="Drive")
+public class TestDrive extends OpMode{
 
     /* Declare OpMode members. */
     Hardware robot = new Hardware(); // Use the class created to define the robot's hardware
@@ -67,11 +66,6 @@ public class HolonomicDrive extends OpMode{
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
-        robot.beacon.enableLed(false);
-        robot.floor.setI2cAddress(new I2cAddr(0x3a));
-
-        // Send telemetry message to signify robot waiting;
-        //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
     }
 
     /*
@@ -94,99 +88,51 @@ public class HolonomicDrive extends OpMode{
     @Override
     public void loop() {
         drive();
-        winch();
-        push();
-        //color();
+        setPower();
     }
+
+    double power = 0.0;
 
     public void drive(){
-        double x = gamepad1.left_stick_x;
-        double y = -gamepad1.left_stick_y;
-        double z = -gamepad1.right_stick_x;
-
-        int dir = Hardware.Direction_Stop;
-        if(y >= 0.5) {
-            dir |= Hardware.Direction_Forward;
-        } else if(y <= -0.5) {
-            dir |= Hardware.Direction_Reverse;
+        if (gamepad1.b) {
+            robot.drive(Hardware.Direction_Forward, power);
+            telemetry.addData("Pwr ", power);
+            telemetry.update();
+        } else {
+            robot.stop();
         }
-        if(x >= 0.5) {
-            dir |= Hardware.Direction_Right;
-        } else if(x <= -0.5) {
-            dir |= Hardware.Direction_Left;
-        }
-        if(dir == Hardware.Direction_Stop) {
-            if(z >= 0.5) {
-                dir |= Hardware.Direction_RotateRight;
-            } else if(z <= -0.5) {
-                dir |= Hardware.Direction_RotateLeft;
-            }
-        }
-
-        robot.drive(dir, 1);
     }
 
-    public void winch() {
+    boolean yPressed = false;
+    boolean aPressed = false;
+
+    public void setPower() {
         // Use gamepad buttons to move the arm up (Y) and down (A)
-        if (gamepad1.y) {
-            robot.wl.setPower(1);
-            robot.wr.setPower(1);
-        } else if (gamepad1.a) {
-            robot.wl.setPower(-1);
-            robot.wr.setPower(-1);
-        } else {
-            robot.wl.setPower(0);
-            robot.wr.setPower(0);
-        }
-    }
-
-    public void push() {
-        if(gamepad1.left_bumper) {
-            robot.push.setPosition(1);
-        } else if(gamepad1.right_bumper) {
-            robot.push.setPosition(-1);
-        } else {
-            robot.push.setPosition(0.5);
-        }
-    }
-
-    public void color() {
-
-        if (gamepad1.x) {
-            if (!currentXPress) {
-                isLedOn = !isLedOn;
-                robot.floor.enableLed(isLedOn);
-                currentXPress = true;
+        if (gamepad1.y && !yPressed) {
+            power += 0.01;
+            if (power > 1.0) {
+                power = 1.0;
             }
-            currentXPress = true;
+            telemetry.addData("P ", power);
+            telemetry.update();
+            yPressed = true;
         } else {
-            currentXPress = false;
+            yPressed = false;
         }
 
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        //float hsvValues[] = {0F,0F,0F};
 
-        // values is a reference to the hsvValues array.
-        //final float values[] = hsvValues;
-        // send the info back to driver station using telemetry function.
-
-        //Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
-        telemetry.addData("LED", isLedOn ? "On" : "Off");
-
-        String red = String.format("%d,%d",robot.beacon.red(),robot.floor.red() );
-        String green = String.format("%d,%d",robot.beacon.green(),robot.floor.green() );
-        String blue = String.format("%d,%d",robot.beacon.blue(),robot.floor.blue() );
-
-        telemetry.addData("Touch ", robot.touch.isPressed());
-        telemetry.addData("Red  ", red);
-        telemetry.addData("Green", green);
-        telemetry.addData("Blue ", blue);
-        //telemetry.addData("Hue", hsvValues[0]);
-        telemetry.update();
+        if (gamepad1.a && !aPressed) {
+            power -= 0.01;
+            if (power < 0.0) {
+                power = 0.0;
+            }
+            aPressed = true;
+            telemetry.addData("P ", power);
+            telemetry.update();
+        } else {
+            aPressed = false;
+        }
     }
-
-    private boolean isLedOn = false;
-    private boolean currentXPress = false;
     /*
      * Code to run ONCE after the driver hits STOP
      */

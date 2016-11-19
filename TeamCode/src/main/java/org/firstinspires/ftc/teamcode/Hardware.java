@@ -71,10 +71,14 @@ public class Hardware
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
-        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //fr.setMaxSpeed(1200);
+        fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //fl.setMaxSpeed(1200);
+        br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //br.setMaxSpeed(1200);
+        bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //bl.setMaxSpeed(1200);
 
         wr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         wl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
