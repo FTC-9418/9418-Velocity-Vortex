@@ -86,7 +86,7 @@ public abstract class BeaconPress extends LinearOpMode {
     telemetry.addData("Mode ", "drive diag");
     telemetry.update();
     robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
-    sleep(2600);
+    sleep(2100);
     findWall(robot);
 
     robot.stop();
@@ -96,7 +96,7 @@ public abstract class BeaconPress extends LinearOpMode {
     int presses = 0;
     while (opModeIsActive() && presses < 2)  {
 
-      robot.drive(searchDirection, 0.5);
+      robot.drive(searchDirection, 0.3);
 
 
       telemetry.addData("Mode ", "Search...");
@@ -115,13 +115,12 @@ public abstract class BeaconPress extends LinearOpMode {
         if (presses < 2) {
           robot.drive(Hardware.Direction_Reverse, 0.3);
           sleep(200);
-          robot.drive(searchDirection, 0.7);
+          robot.drive(searchDirection, 0.5);
           sleep(500);
         } else if (presses == 2) {
           robot.drive(hitBallDirection, 0.7);
-          sleep(3000);
+          sleep(2900);
           break;
-
         }
       }
 
