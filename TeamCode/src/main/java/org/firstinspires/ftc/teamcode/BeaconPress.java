@@ -56,6 +56,7 @@ public abstract class BeaconPress extends LinearOpMode {
 
   private boolean lookForRed = false;
   private int threshold = 3;
+  private int driveTime = 2100;
   private int searchDirection = Hardware.Direction_Left;
   private int hitBallDirection = Hardware.Direction_ReverseRight;
 
@@ -64,6 +65,7 @@ public abstract class BeaconPress extends LinearOpMode {
     if (lookForRed){
       this.searchDirection = Hardware.Direction_Right;
       this.hitBallDirection = Hardware.Direction_ReverseLeft;
+      this.driveTime = 2800;
     }
   }
 
@@ -80,13 +82,10 @@ public abstract class BeaconPress extends LinearOpMode {
 
     waitForStart();
 
-
-
-
     telemetry.addData("Mode ", "drive diag");
     telemetry.update();
     robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
-    sleep(2100);
+    sleep(driveTime);
     findWall(robot);
 
     robot.stop();
@@ -108,7 +107,7 @@ public abstract class BeaconPress extends LinearOpMode {
         telemetry.addData("Mode ", "Pressing");
         if (lookForRed){
           robot.drive(searchDirection, 0.3);
-          sleep(700);
+          sleep(300);
         }
         pressBeacon(robot);
         presses++;

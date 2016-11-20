@@ -32,8 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-
-import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.I2cAddr;
@@ -156,6 +154,11 @@ public class HolonomicDrive extends OpMode{
             if (!currentXPress) {
                 isLedOn = !isLedOn;
                 robot.floor.enableLed(isLedOn);
+                try{
+                    Thread.sleep(250);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 currentXPress = true;
             }
             currentXPress = true;
@@ -173,9 +176,9 @@ public class HolonomicDrive extends OpMode{
         //Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
         telemetry.addData("LED", isLedOn ? "On" : "Off");
 
-        String red = String.format("%d,%d",robot.beacon.red(),robot.floor.red() );
+        String red   = String.format("%d,%d",robot.beacon.red(),robot.floor.red() );
         String green = String.format("%d,%d",robot.beacon.green(),robot.floor.green() );
-        String blue = String.format("%d,%d",robot.beacon.blue(),robot.floor.blue() );
+        String blue  = String.format("%d,%d",robot.beacon.blue(),robot.floor.blue() );
 
         telemetry.addData("Touch ", robot.touch.isPressed());
         telemetry.addData("Red  ", red);
@@ -187,6 +190,7 @@ public class HolonomicDrive extends OpMode{
 
     private boolean isLedOn = false;
     private boolean currentXPress = false;
+
     /*
      * Code to run ONCE after the driver hits STOP
      */

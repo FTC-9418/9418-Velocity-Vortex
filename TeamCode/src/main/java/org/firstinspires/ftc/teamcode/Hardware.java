@@ -95,45 +95,46 @@ public class Hardware
         push.setPosition(MID_SERVO);
 
         beacon = hwMap.colorSensor.get("beacon"); //address 0x3c - default
+        beacon.setI2cAddress(new I2cAddr(0x3c/2));
         beacon.enableLed(false);
 
-        floor = hwMap.colorSensor.get("floor"); //address 0x3a
+        floor = hwMap.colorSensor.get("floor"); //address 0x3e
         //floor.setI2cAddress(I2cAddr.create7bit(0x3a));
-        floor.setI2cAddress(new I2cAddr(0x3a/2));
-        floor.enableLed(false);
+        floor.setI2cAddress(new I2cAddr(0x3e/2));
+        floor.enableLed(true);
 
         touch = hwMap.touchSensor.get("Touch Sensor");
     }
 
     //  Rotate, Left, Right, Back, Forward
-    public final static int Direction_Stop = 0;
-    public final static int Direction_Forward = 0b00001;
-    public final static int Direction_Reverse = 0b00010;
-    public final static int Direction_Left    = 0b01000;
-    public final static int Direction_Right   = 0b00100;
-    public final static int Direction_Rotate   = 0b10000;
-    public final static int Direction_RotateLeft  = Direction_Rotate | Direction_Left;
-    public final static int Direction_RotateRight = Direction_Rotate| Direction_Right;
-    public final static int Direction_ForwardLeft = Direction_Forward | Direction_Left;
+    public final static int Direction_Stop         = 0;
+    public final static int Direction_Forward      = 0b00001;
+    public final static int Direction_Reverse      = 0b00010;
+    public final static int Direction_Left         = 0b01000;
+    public final static int Direction_Right        = 0b00100;
+    public final static int Direction_Rotate       = 0b10000;
+    public final static int Direction_RotateLeft   = Direction_Rotate  | Direction_Left;
+    public final static int Direction_RotateRight  = Direction_Rotate  | Direction_Right;
+    public final static int Direction_ForwardLeft  = Direction_Forward | Direction_Left;
     public final static int Direction_ForwardRight = Direction_Forward | Direction_Right;
-    public final static int Direction_ReverseLeft = Direction_Reverse | Direction_Left;
+    public final static int Direction_ReverseLeft  = Direction_Reverse | Direction_Left;
     public final static int Direction_ReverseRight = Direction_Reverse | Direction_Right;
 
     public void drive(int dir, double pwr){
 
         switch (dir) {
-            case Direction_Stop: motorPower(0,0,0,0); break;
-            case Direction_Forward: motorPower(pwr,pwr,pwr,pwr); break;
-            case Direction_Reverse: motorPower(-pwr,-pwr,-pwr,-pwr); break;
-            case Direction_Right: motorPower(-pwr,pwr,pwr,-pwr); break;
-            case Direction_Left: motorPower(pwr,-pwr,-pwr,pwr); break;
-            case Direction_RotateRight: motorPower(pwr,-pwr,pwr,-pwr); break;
-            case Direction_RotateLeft: motorPower(-pwr,pwr,-pwr,pwr); break;
-            case Direction_ForwardLeft: motorPower(pwr,0,0,pwr); break;
-            case Direction_ForwardRight: motorPower(0,pwr,pwr,0); break;
-            case Direction_ReverseRight: motorPower(-pwr,0,0,-pwr); break;
-            case Direction_ReverseLeft: motorPower(0,-pwr,-pwr,0); break;
-            default: motorPower(0,0,0,0); break;
+            case Direction_Stop         : motorPower(0,0,0,0);             break;
+            case Direction_Forward      : motorPower(pwr,pwr,pwr,pwr);     break;
+            case Direction_Reverse      : motorPower(-pwr,-pwr,-pwr,-pwr); break;
+            case Direction_Right        : motorPower(-pwr,pwr,pwr,-pwr);   break;
+            case Direction_Left         : motorPower(pwr,-pwr,-pwr,pwr);   break;
+            case Direction_RotateRight  : motorPower(pwr,-pwr,pwr,-pwr);   break;
+            case Direction_RotateLeft   : motorPower(-pwr,pwr,-pwr,pwr);   break;
+            case Direction_ForwardLeft  : motorPower(pwr,0,0,pwr);         break;
+            case Direction_ForwardRight : motorPower(0,pwr,pwr,0);         break;
+            case Direction_ReverseRight : motorPower(-pwr,0,0,-pwr);       break;
+            case Direction_ReverseLeft  : motorPower(0,-pwr,-pwr,0);       break;
+            default                     : motorPower(0,0,0,0);             break;
 
         }
     }
@@ -179,6 +180,5 @@ public class Hardware
         // Reset the cycle clock for the next pass.
         period.reset();
     }
-
 }
 

@@ -51,8 +51,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @Autonomous(name = "Red Beacon", group = "Sensor")
 public class RedBeaconPress extends BeaconPress {
 
-  public RedBeaconPress() {
-    super(true);
-  }
+  public RedBeaconPress() { super(true); }
 
 }
