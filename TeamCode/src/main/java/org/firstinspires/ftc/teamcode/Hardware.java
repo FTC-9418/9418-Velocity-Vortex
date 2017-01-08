@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -21,15 +20,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 public class Hardware
 {
-    public DcMotor fl = null;
-    public DcMotor bl = null;
-    public DcMotor fr = null;
-    public DcMotor br = null;
-    public DcMotor wl = null;
-    public DcMotor wr = null;
-    public Servo push = null;
+    public DcMotor fl     = null;
+    public DcMotor bl     = null;
+    public DcMotor fr     = null;
+    public DcMotor br     = null;
+    public DcMotor intake = null;
+    public DcMotor cam    = null;
+    public Servo   push   = null;
     public ColorSensor beacon;
-    public ColorSensor floor;
+    public LightSensor floor;
     public TouchSensor touch;
 
     //public ModernRoboticsI2cColorSensor
@@ -56,32 +55,32 @@ public class Hardware
         br = hwMap.dcMotor.get("BR");
         bl = hwMap.dcMotor.get("BL");
 
-        // Define and Initialize Winch Motors
-        wr = hwMap.dcMotor.get("WR");
-        wl = hwMap.dcMotor.get("WL");
-        wr.setDirection(DcMotor.Direction.REVERSE);
+        // Define and Initialize cam
+        cam = hwMap.dcMotor.get("cam");
+        cam.setDirection(DcMotor.Direction.REVERSE);
+
+        // Define and Initialize intake
+        intake = hwMap.dcMotor.get("intake");
 
         // Set all motors to zero power
         fr.setPower(0);
         fl.setPower(0);
         br.setPower(0);
         bl.setPower(0);
-        wr.setPower(0);
-        wl.setPower(0);
+        cam.setPower(0);
+        intake.setPower(0);
 
-        // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
+        // Set maximum speed of the cam
+        //cam.setMaxSpeed(400);
+
+        // Set drivetrain motors to run without encoders.
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //fr.setMaxSpeed(1200);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //fl.setMaxSpeed(1200);
         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //br.setMaxSpeed(1200);
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //bl.setMaxSpeed(1200);
 
-        wr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        wl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Set cam motor to run with encoders
+        cam.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set motor direction
         fr.setDirection(DcMotor.Direction.REVERSE);
@@ -91,18 +90,15 @@ public class Hardware
 
 
         // Define and initialize ALL installed servos.
-        push = hwMap.servo.get("push_servo");
+        push = hwMap.servo.get("push");
         push.setPosition(MID_SERVO);
 
         beacon = hwMap.colorSensor.get("beacon"); //address 0x3c - default
         beacon.setI2cAddress(new I2cAddr(0x3c/2));
         beacon.enableLed(false);
 
-        floor = hwMap.colorSensor.get("floor"); //address 0x3e
-        //floor.setI2cAddress(I2cAddr.create7bit(0x3a));
-        floor.setI2cAddress(new I2cAddr(0x3e/2));
+        floor = hwMap.lightSensor.get("Light Sensor");
         floor.enableLed(true);
-
         touch = hwMap.touchSensor.get("Touch Sensor");
     }
 
@@ -151,9 +147,9 @@ public class Hardware
     }
 
 
-    public boolean isAnyBeaconLight(int threshold) {
+    public boolean isFloorLineDetected(float threshold) {
 
-        return (beacon.red() > threshold || beacon.blue() > threshold);
+        return (floor.getLightDetected() > threshold);
     }
 
     /***

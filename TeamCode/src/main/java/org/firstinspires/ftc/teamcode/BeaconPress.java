@@ -31,15 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
-
-import com.qualcomm.ftcrobotcontroller.R;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 /*
  *
@@ -55,7 +47,8 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 public abstract class BeaconPress extends LinearOpMode {
 
   private boolean lookForRed = false;
-  private int threshold = 3;
+  private int beacon_threshold = 3;
+  private float floor_threshold = 0.3f;
   private int driveTime = 2100;
   private int searchDirection = Hardware.Direction_Left;
   private int hitBallDirection = Hardware.Direction_ReverseRight;
@@ -82,7 +75,6 @@ public abstract class BeaconPress extends LinearOpMode {
 
     waitForStart();
 
-    telemetry.addData("Mode ", "drive diag");
     telemetry.update();
     robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
     sleep(driveTime);
@@ -97,18 +89,13 @@ public abstract class BeaconPress extends LinearOpMode {
 
       robot.drive(searchDirection, 0.3);
 
-
       telemetry.addData("Mode ", "Search...");
       telemetry.addData("Red ", robot.beacon.red());
       telemetry.addData("Blu ", robot.beacon.blue());
       telemetry.update();
 
-      if (robot.isAnyBeaconLight(threshold)){
+      if (robot.isFloorLineDetected(floor_threshold)){
         telemetry.addData("Mode ", "Pressing");
-        if (lookForRed){
-          robot.drive(searchDirection, 0.3);
-          sleep(300);
-        }
         pressBeacon(robot);
         presses++;
         if (presses < 2) {
@@ -117,8 +104,7 @@ public abstract class BeaconPress extends LinearOpMode {
           robot.drive(searchDirection, 0.5);
           sleep(500);
         } else if (presses == 2) {
-          robot.drive(hitBallDirection, 0.7);
-          sleep(2900);
+          postBeacon(robot, hitBallDirection, 0.7, 2900);
           break;
         }
       }
@@ -127,6 +113,11 @@ public abstract class BeaconPress extends LinearOpMode {
         findWall(robot);
       }
     }
+  }
+
+  private void postBeacon(Hardware robot, int hitBallDirection, double pwr, int milliseconds) {
+    robot.drive(hitBallDirection, pwr);
+    sleep(milliseconds);
   }
 
   private void wiggle(Hardware robot, int t) {
@@ -158,13 +149,13 @@ public abstract class BeaconPress extends LinearOpMode {
   private void pressBeacon(Hardware robot) {
     robot.stop();
     if (lookForRed) {
-      if (robot.beacon.red() > threshold) {
+      if (robot.beacon.red() > beacon_threshold) {
         robot.push.setPosition(-1);
       } else {
         robot.push.setPosition(1);
       }
     } else {
-      if (robot.beacon.blue() > threshold) {
+      if (robot.beacon.blue() > beacon_threshold) {
         robot.push.setPosition(-1);
       } else {
         robot.push.setPosition(1);

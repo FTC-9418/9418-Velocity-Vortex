@@ -65,8 +65,9 @@ public class HolonomicDrive extends OpMode{
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+        telemetry.addData("Max Speed: ", robot.cam.getMaxSpeed());
+        telemetry.addData("Position: ", robot.cam.getCurrentPosition());
         robot.beacon.enableLed(false);
-        robot.floor.setI2cAddress(new I2cAddr(0x3a));
 
         // Send telemetry message to signify robot waiting;
         //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
@@ -92,9 +93,11 @@ public class HolonomicDrive extends OpMode{
     @Override
     public void loop() {
         drive();
-        winch();
+        intake();
         push();
+        cam();
         color();
+        //telemetry.addData("Position: ", robot.cam.getCurrentPosition());
     }
 
     public void drive(){
@@ -124,18 +127,34 @@ public class HolonomicDrive extends OpMode{
         robot.drive(dir, 1);
     }
 
-    public void winch() {
-        // Use gamepad buttons to move the arm up (Y) and down (A)
-        if (gamepad1.y) {
-            robot.wl.setPower(1);
-            robot.wr.setPower(1);
-        } else if (gamepad1.a) {
-            robot.wl.setPower(-1);
-            robot.wr.setPower(-1);
-        } else {
-            robot.wl.setPower(0);
-            robot.wr.setPower(0);
+    boolean active = false;
+
+    // Set previous and current state of button
+    boolean bPrevState = false;
+
+    public void intake() {
+
+        // check the status of the a button .
+        boolean bCurrState = false;
+        bCurrState = gamepad1.a;
+
+        // check for button state transitions.
+        if ((bCurrState == true) && (bCurrState != bPrevState))  {
+
+            // button is transitioning to a pressed state.  Toggles motor
+            active = !active;
+            if (active == true) {
+                robot.intake.setPower(1);
+            } else {
+                robot.intake.setPower(0);
+            }
         }
+        bPrevState = bCurrState;
+    }
+
+    public void cam() {
+        /*robot.cam.setTargetPosition(1000);
+        robot.cam.setPower(0.5);*/
     }
 
     public void push() {
@@ -176,14 +195,11 @@ public class HolonomicDrive extends OpMode{
         //Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
         telemetry.addData("LED", isLedOn ? "On" : "Off");
 
-        String red   = String.format("%d,%d",robot.beacon.red(),robot.floor.red() );
-        String green = String.format("%d,%d",robot.beacon.green(),robot.floor.green() );
-        String blue  = String.format("%d,%d",robot.beacon.blue(),robot.floor.blue() );
+        String rgb   = String.format("%d,%d, %d",robot.beacon.red(),robot.beacon.green(), robot.beacon.blue());
 
         telemetry.addData("Touch ", robot.touch.isPressed());
-        telemetry.addData("Red  ", red);
-        telemetry.addData("Green", green);
-        telemetry.addData("Blue ", blue);
+        telemetry.addData("RGB: ", rgb);
+        telemetry.addData("Floor: ", robot.floor.getLightDetected());
         //telemetry.addData("Hue", hsvValues[0]);
         telemetry.update();
     }

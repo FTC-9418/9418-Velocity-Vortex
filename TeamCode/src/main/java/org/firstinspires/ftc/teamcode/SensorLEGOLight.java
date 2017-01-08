@@ -29,18 +29,11 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
-import android.app.Activity;
-import android.graphics.Color;
-import android.view.View;
-
-import com.qualcomm.ftcrobotcontroller.R;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.LightSensor;
 
 /*
@@ -66,8 +59,6 @@ public class SensorLEGOLight extends LinearOpMode {
     // bPrevState and bCurrState represent the previous and current state of the button.
     boolean bPrevState = false;
     boolean bCurrState = false;
-
-
 
     // bLedOn represents the state of the LED.
     boolean bLedOn = true;
