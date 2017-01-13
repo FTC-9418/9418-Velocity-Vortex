@@ -27,6 +27,7 @@ public class Hardware
     public DcMotor intake = null;
     public DcMotor cam    = null;
     public Servo   push   = null;
+    public Servo   gate   = null;
     public ColorSensor beacon;
     public LightSensor floor;
     public TouchSensor touch;
@@ -80,7 +81,8 @@ public class Hardware
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set cam motor to run with encoders
-        cam.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // Set motor direction
         fr.setDirection(DcMotor.Direction.REVERSE);
@@ -89,9 +91,11 @@ public class Hardware
         bl.setDirection(DcMotor.Direction.FORWARD);
 
 
-        // Define and initialize ALL installed servos.
+        // Define and initialize installed servos.
         push = hwMap.servo.get("push");
         push.setPosition(MID_SERVO);
+
+        gate = hwMap.servo.get("gate");
 
         beacon = hwMap.colorSensor.get("beacon"); //address 0x3c - default
         beacon.setI2cAddress(new I2cAddr(0x3c/2));

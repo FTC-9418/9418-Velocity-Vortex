@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 
 
@@ -66,7 +67,6 @@ public class HolonomicDrive extends OpMode{
          */
         robot.init(hardwareMap);
         telemetry.addData("Max Speed: ", robot.cam.getMaxSpeed());
-        telemetry.addData("Position: ", robot.cam.getCurrentPosition());
         robot.beacon.enableLed(false);
 
         // Send telemetry message to signify robot waiting;
@@ -95,9 +95,9 @@ public class HolonomicDrive extends OpMode{
         drive();
         intake();
         push();
-        cam();
         color();
-        //telemetry.addData("Position: ", robot.cam.getCurrentPosition());
+        cam();
+        primeTrigger();
     }
 
     public void drive(){
@@ -127,34 +127,82 @@ public class HolonomicDrive extends OpMode{
         robot.drive(dir, 1);
     }
 
-    boolean active = false;
+    boolean aActive = false;
+    boolean bActive = false;
 
     // Set previous and current state of button
+    boolean aPrevState = false;
     boolean bPrevState = false;
 
     public void intake() {
 
         // check the status of the a button .
+        boolean aCurrState = false;
         boolean bCurrState = false;
-        bCurrState = gamepad1.a;
+
+        aCurrState = gamepad1.a;
+        bCurrState = gamepad1.b;
 
         // check for button state transitions.
-        if ((bCurrState == true) && (bCurrState != bPrevState))  {
+        if ((aCurrState == true) && (aCurrState != aPrevState))  {
 
             // button is transitioning to a pressed state.  Toggles motor
-            active = !active;
-            if (active == true) {
+            aActive = !aActive;
+            if (aActive == true) {
                 robot.intake.setPower(1);
             } else {
                 robot.intake.setPower(0);
             }
+        } else if ((bCurrState == true) && (bCurrState != bPrevState)) {
+            bActive = !bActive;
+            if (bActive == true) {
+                robot.intake.setPower(-0.5);
+            } else {
+                robot.intake.setPower(0);
+            }
         }
+
+        aPrevState = aCurrState;
         bPrevState = bCurrState;
     }
 
     public void cam() {
-        /*robot.cam.setTargetPosition(1000);
-        robot.cam.setPower(0.5);*/
+        if(gamepad1.y) {
+            setPosition();
+        }
+    }
+
+    public void setPosition() {
+        if(primeStep >= 0) {
+            return;
+        }
+        primeStep = 0;
+        robot.cam.setTargetPosition(steps[primeStep]);
+        robot.cam.setPower(0.8);
+    }
+
+    private int primeStep = -1;
+    private int [] steps = {450, 500, 540, 560};
+
+    public void primeTrigger() {
+        if(primeStep < 0) {
+            return;
+        }
+        if(Math.abs(robot.cam.getTargetPosition() - robot.cam.getCurrentPosition()) > 5) {
+            robot.cam.setPower(0.8);
+        } else {
+            telemetry.addData("End Position", robot.cam.getCurrentPosition());
+            primeStep++;
+            if(primeStep >= steps.length) {
+                robot.cam.setPower(0);
+                robot.cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.cam.setTargetPosition(0);
+                primeStep = -1;
+            } else {
+                robot.cam.setTargetPosition(steps[primeStep]);
+            }
+        }
     }
 
     public void push() {
@@ -193,15 +241,15 @@ public class HolonomicDrive extends OpMode{
         // send the info back to driver station using telemetry function.
 
         //Color.RGBToHSV(robot.beacon.red() * 8, robot.beacon.green() * 8, robot.beacon.blue() * 8, hsvValues);
-        telemetry.addData("LED", isLedOn ? "On" : "Off");
+        //telemetry.addData("LED", isLedOn ? "On" : "Off");
 
         String rgb   = String.format("%d,%d, %d",robot.beacon.red(),robot.beacon.green(), robot.beacon.blue());
 
-        telemetry.addData("Touch ", robot.touch.isPressed());
+        /*telemetry.addData("Touch ", robot.touch.isPressed());
         telemetry.addData("RGB: ", rgb);
         telemetry.addData("Floor: ", robot.floor.getLightDetected());
         //telemetry.addData("Hue", hsvValues[0]);
-        telemetry.update();
+        telemetry.update();*/
     }
 
     private boolean isLedOn = false;

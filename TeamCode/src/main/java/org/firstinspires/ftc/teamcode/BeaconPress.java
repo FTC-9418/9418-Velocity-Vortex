@@ -120,22 +120,6 @@ public abstract class BeaconPress extends LinearOpMode {
     sleep(milliseconds);
   }
 
-  private void wiggle(Hardware robot, int t) {
-    robot.push.setPosition(-1);
-    sleep(t);
-    robot.push.setPosition(1);
-    sleep(t);
-    robot.push.setPosition(-1);
-    sleep(t);
-    robot.push.setPosition(1);
-    sleep(t);
-    robot.push.setPosition(-1);
-    sleep(t);
-    robot.push.setPosition(1);
-    sleep(t);
-    robot.push.setPosition(0.5);
-  }
-
   private void findWall(Hardware robot) {
     robot.drive(Hardware.Direction_Forward, 0.2);
     while(!robot.touch.isPressed() && opModeIsActive()) {
