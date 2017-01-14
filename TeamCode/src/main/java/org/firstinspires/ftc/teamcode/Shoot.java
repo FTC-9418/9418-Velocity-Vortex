@@ -72,21 +72,21 @@ public class Shoot extends LinearOpMode {
     robot.drive(Hardware.Direction_Stop, 0);
 
     robot.fireCatapult();
-    primeTrigger(robot);
 
     robot.intake.setPower(1);
+    primeTrigger(robot);
 
-    sleep(2500);
+    sleep(1500);
 
     robot.intake.setPower(0);
 
     robot.fireCatapult();
     primeTrigger(robot);
-    
+
   }
 
   private void primeTrigger(Hardware robot) {
-    while(!robot.primeTrigger()) {
+    while(!robot.primeTrigger() && !isStopRequested()) {
       sleep(10);
     }
   }

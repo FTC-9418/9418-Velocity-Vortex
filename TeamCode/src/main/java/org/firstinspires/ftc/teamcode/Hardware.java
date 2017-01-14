@@ -194,20 +194,24 @@ public class Hardware
             return true;
         }
         if(Math.abs(cam.getTargetPosition() - cam.getCurrentPosition()) > 5) {
-            cam.setPower(0.8);
+            cam.setPower(1.0);
         } else {
             primeStep++;
             if(primeStep >= steps.length) {
-                cam.setPower(0);
-                cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                cam.setTargetPosition(0);
-                primeStep = -1;
+                stopPrime();
             } else {
                 cam.setTargetPosition(steps[primeStep]);
             }
         }
         return primeStep < 0;
+    }
+
+    public void stopPrime() {
+        cam.setPower(0);
+        cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        cam.setTargetPosition(0);
+        primeStep = -1;
     }
 }
 

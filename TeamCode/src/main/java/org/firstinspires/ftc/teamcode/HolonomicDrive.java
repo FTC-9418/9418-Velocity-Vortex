@@ -167,6 +167,8 @@ public class HolonomicDrive extends OpMode{
     public void cam() {
         if(gamepad1.y) {
             robot.fireCatapult();
+        } else if(gamepad1.left_trigger > 0.5) {
+            robot.stopPrime();
         }
     }
 
