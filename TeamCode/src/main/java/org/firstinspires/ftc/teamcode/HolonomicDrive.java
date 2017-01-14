@@ -34,8 +34,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 
 
 /**
@@ -68,7 +66,6 @@ public class HolonomicDrive extends OpMode{
         robot.init(hardwareMap);
         telemetry.addData("Max Speed: ", robot.cam.getMaxSpeed());
         robot.beacon.enableLed(false);
-
         // Send telemetry message to signify robot waiting;
         //telemetry.addData("Test", "Foo Bar Fizz Buzz Xyzzy");
     }
@@ -97,7 +94,8 @@ public class HolonomicDrive extends OpMode{
         push();
         color();
         cam();
-        primeTrigger();
+        robot.primeTrigger();
+        telemetry.addData("Light: ", robot.floor.getLightDetected());
     }
 
     public void drive(){
@@ -168,40 +166,7 @@ public class HolonomicDrive extends OpMode{
 
     public void cam() {
         if(gamepad1.y) {
-            setPosition();
-        }
-    }
-
-    public void setPosition() {
-        if(primeStep >= 0) {
-            return;
-        }
-        primeStep = 0;
-        robot.cam.setTargetPosition(steps[primeStep]);
-        robot.cam.setPower(0.8);
-    }
-
-    private int primeStep = -1;
-    private int [] steps = {450, 500, 540, 560};
-
-    public void primeTrigger() {
-        if(primeStep < 0) {
-            return;
-        }
-        if(Math.abs(robot.cam.getTargetPosition() - robot.cam.getCurrentPosition()) > 5) {
-            robot.cam.setPower(0.8);
-        } else {
-            telemetry.addData("End Position", robot.cam.getCurrentPosition());
-            primeStep++;
-            if(primeStep >= steps.length) {
-                robot.cam.setPower(0);
-                robot.cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.cam.setTargetPosition(0);
-                primeStep = -1;
-            } else {
-                robot.cam.setTargetPosition(steps[primeStep]);
-            }
+            robot.fireCatapult();
         }
     }
 
@@ -209,7 +174,7 @@ public class HolonomicDrive extends OpMode{
         if(gamepad1.left_bumper) {
             robot.push.setPosition(1);
         } else if(gamepad1.right_bumper) {
-            robot.push.setPosition(-1);
+            robot.push.setPosition(0);
         } else {
             robot.push.setPosition(0.5);
         }

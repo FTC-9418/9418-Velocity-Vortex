@@ -27,14 +27,13 @@ public class Hardware
     public DcMotor intake = null;
     public DcMotor cam    = null;
     public Servo   push   = null;
-    public Servo   gate   = null;
     public ColorSensor beacon;
     public LightSensor floor;
     public TouchSensor touch;
 
     //public ModernRoboticsI2cColorSensor
 
-    public static final double MID_SERVO =  0.5 ;
+    public static final double MID_SERVO =  0.5;
 
     /* local OpMode members. */
     HardwareMap hwMap           =  null;
@@ -94,8 +93,6 @@ public class Hardware
         // Define and initialize installed servos.
         push = hwMap.servo.get("push");
         push.setPosition(MID_SERVO);
-
-        gate = hwMap.servo.get("gate");
 
         beacon = hwMap.colorSensor.get("beacon"); //address 0x3c - default
         beacon.setI2cAddress(new I2cAddr(0x3c/2));
@@ -179,6 +176,38 @@ public class Hardware
 
         // Reset the cycle clock for the next pass.
         period.reset();
+    }
+    public void fireCatapult() {
+        if(primeStep >= 0) {
+            return;
+        }
+        primeStep = 0;
+        cam.setTargetPosition(steps[primeStep]);
+        cam.setPower(0.8);
+    }
+
+    private int primeStep = -1;
+    private int [] steps = {450, 500, 540, 560};
+
+    public boolean primeTrigger() {
+        if(primeStep < 0) {
+            return true;
+        }
+        if(Math.abs(cam.getTargetPosition() - cam.getCurrentPosition()) > 5) {
+            cam.setPower(0.8);
+        } else {
+            primeStep++;
+            if(primeStep >= steps.length) {
+                cam.setPower(0);
+                cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                cam.setTargetPosition(0);
+                primeStep = -1;
+            } else {
+                cam.setTargetPosition(steps[primeStep]);
+            }
+        }
+        return primeStep < 0;
     }
 }
 

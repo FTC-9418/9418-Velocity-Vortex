@@ -48,7 +48,7 @@ public abstract class BeaconPress extends LinearOpMode {
 
   private boolean lookForRed = false;
   private int beacon_threshold = 3;
-  private float floor_threshold = 0.3f;
+  private float floor_threshold = 0.37f;
   private int driveTime = 2100;
   private int searchDirection = Hardware.Direction_Left;
   private int hitBallDirection = Hardware.Direction_ReverseRight;
@@ -95,7 +95,7 @@ public abstract class BeaconPress extends LinearOpMode {
       telemetry.update();
 
       if (robot.isFloorLineDetected(floor_threshold)){
-        telemetry.addData("Mode ", "Pressing");
+        telemetry.addData("Light: ", robot.floor.getLightDetected());
         pressBeacon(robot);
         presses++;
         if (presses < 2) {
