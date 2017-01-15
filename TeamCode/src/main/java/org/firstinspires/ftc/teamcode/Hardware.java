@@ -95,7 +95,7 @@ public class Hardware
         push.setPosition(MID_SERVO);
 
         beacon = hwMap.colorSensor.get("beacon"); //address 0x3c - default
-        beacon.setI2cAddress(new I2cAddr(0x3c/2));
+        //beacon.setI2cAddress(new I2cAddr(0x3c/2));
         beacon.enableLed(false);
 
         floor = hwMap.lightSensor.get("Light Sensor");
@@ -149,7 +149,6 @@ public class Hardware
 
 
     public boolean isFloorLineDetected(float threshold) {
-
         return (floor.getLightDetected() > threshold);
     }
 
@@ -182,12 +181,24 @@ public class Hardware
             return;
         }
         primeStep = 0;
+        endPosition = 560;
+        cam.setTargetPosition(steps[primeStep]);
+        cam.setPower(0.8);
+    }
+
+    public void initCatapult() {
+        if(primeStep >= 0) {
+            return;
+        }
+        primeStep = 0;
+        endPosition = 501;
         cam.setTargetPosition(steps[primeStep]);
         cam.setPower(0.8);
     }
 
     private int primeStep = -1;
     private int [] steps = {450, 500, 540, 560};
+    private int endPosition = 560;
 
     public boolean primeTrigger() {
         if(primeStep < 0) {
@@ -197,7 +208,7 @@ public class Hardware
             cam.setPower(1.0);
         } else {
             primeStep++;
-            if(primeStep >= steps.length) {
+            if(primeStep >= steps.length || steps[primeStep] > endPosition) {
                 stopPrime();
             } else {
                 cam.setTargetPosition(steps[primeStep]);

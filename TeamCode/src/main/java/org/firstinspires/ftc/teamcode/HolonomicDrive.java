@@ -96,6 +96,8 @@ public class HolonomicDrive extends OpMode{
         cam();
         robot.primeTrigger();
         telemetry.addData("Light: ", robot.floor.getLightDetected());
+        String rgb = String.format("%d,%d, %d",robot.beacon.red(),robot.beacon.green(), robot.beacon.blue());
+        telemetry.addData("RGB: ", rgb);
     }
 
     public void drive(){

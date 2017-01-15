@@ -48,7 +48,7 @@ public abstract class BeaconPress extends LinearOpMode {
 
   private boolean lookForRed = false;
   private int beacon_threshold = 3;
-  private float floor_threshold = 0.37f;
+  private float floor_threshold = 0.3f;
   private int driveTime = 2100;
   private int searchDirection = Hardware.Direction_Left;
   private int hitBallDirection = Hardware.Direction_ReverseRight;
@@ -118,6 +118,8 @@ public abstract class BeaconPress extends LinearOpMode {
   private void postBeacon(Hardware robot, int hitBallDirection, double pwr, int milliseconds) {
     robot.drive(hitBallDirection, pwr);
     sleep(milliseconds);
+    robot.initCatapult();
+    primeTrigger(robot);
   }
 
   private void findWall(Hardware robot) {
@@ -131,16 +133,17 @@ public abstract class BeaconPress extends LinearOpMode {
   }
 
   private void pressBeacon(Hardware robot) {
+    findWall(robot);
     robot.stop();
     if (lookForRed) {
-      if (robot.beacon.red() > beacon_threshold) {
-        robot.push.setPosition(-1);
-      } else {
+      if (robot.beacon.blue() > beacon_threshold) {
         robot.push.setPosition(1);
+      } else {
+        robot.push.setPosition(0);
       }
     } else {
       if (robot.beacon.blue() > beacon_threshold) {
-        robot.push.setPosition(-1);
+        robot.push.setPosition(0);
       } else {
         robot.push.setPosition(1);
       }
@@ -152,5 +155,10 @@ public abstract class BeaconPress extends LinearOpMode {
     robot.push.setPosition(0.5);
   }
 
+  private void primeTrigger(Hardware robot) {
+    while(!robot.primeTrigger() && !isStopRequested()) {
+      sleep(10);
+    }
+  }
 
 }

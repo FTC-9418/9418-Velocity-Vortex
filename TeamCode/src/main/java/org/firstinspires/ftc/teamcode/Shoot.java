@@ -48,7 +48,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Autonomous(name = "Shoot Only", group = "Auto")
 public class Shoot extends LinearOpMode {
 
-  private int driveTime = 1000;
+  private int initialDriveTime = 1200;
+  private int finalDriveTime   = 1000;
+
 
   public Shoot() {
 
@@ -68,8 +70,11 @@ public class Shoot extends LinearOpMode {
 
     telemetry.update();
     robot.drive(Hardware.Direction_Left, 0.5);
-    sleep(driveTime);
+    sleep(initialDriveTime);
     robot.drive(Hardware.Direction_Stop, 0);
+
+    robot.initCatapult();
+    primeTrigger(robot);
 
     robot.fireCatapult();
 
@@ -82,6 +87,10 @@ public class Shoot extends LinearOpMode {
 
     robot.fireCatapult();
     primeTrigger(robot);
+
+    robot.drive(Hardware.Direction_Left, 0.5);
+    sleep(finalDriveTime);
+    robot.drive(Hardware.Direction_Stop, 0);
 
   }
 
