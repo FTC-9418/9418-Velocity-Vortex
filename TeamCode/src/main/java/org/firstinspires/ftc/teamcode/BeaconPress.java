@@ -118,6 +118,7 @@ public abstract class BeaconPress extends LinearOpMode {
   private void postBeacon(Hardware robot, int hitBallDirection, double pwr, int milliseconds) {
     robot.drive(hitBallDirection, pwr);
     sleep(milliseconds);
+    robot.stop();
     robot.initCatapult();
     primeTrigger(robot);
   }
