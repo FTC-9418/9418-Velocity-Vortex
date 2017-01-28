@@ -82,6 +82,7 @@ public class Hardware
         // Set cam motor to run with encoders
         cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //cam.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set motor direction
         fr.setDirection(DcMotor.Direction.REVERSE);
@@ -177,13 +178,23 @@ public class Hardware
         period.reset();
     }
     public void fireCatapult() {
-        if(primeStep >= 0) {
+        /*if(primeStep >= 0) {
             return;
         }
         primeStep = 0;
-        endPosition = 560;
+        endPosition = 506;
         cam.setTargetPosition(steps[primeStep]);
-        cam.setPower(0.8);
+        cam.setPower(0.8);*/
+
+        int start_pos = cam.getCurrentPosition();
+
+        cam.setTargetPosition(start_pos + 560);
+        cam.setPower(.1);
+
+        /*while(Math.abs(cam.getCurrentPosition() - start_pos) < 500){
+            cam.setPower(.1);
+        }
+        cam.setPower(0);*/
     }
 
     public void initCatapult() {
@@ -191,7 +202,7 @@ public class Hardware
             return;
         }
         primeStep = 0;
-        endPosition = 501;
+        endPosition = 560;
         cam.setTargetPosition(steps[primeStep]);
         cam.setPower(0.8);
     }

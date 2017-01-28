@@ -73,8 +73,8 @@ public class Shoot extends LinearOpMode {
     sleep(initialDriveTime);
     robot.drive(Hardware.Direction_Stop, 0);
 
-    robot.initCatapult();
-    primeTrigger(robot);
+    //robot.initCatapult();
+    //primeTrigger(robot);
 
     robot.fireCatapult();
 

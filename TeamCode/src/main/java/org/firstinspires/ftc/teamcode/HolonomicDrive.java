@@ -94,7 +94,7 @@ public class HolonomicDrive extends OpMode{
         push();
         color();
         cam();
-        robot.primeTrigger();
+        //robot.primeTrigger();
         telemetry.addData("Light: ", robot.floor.getLightDetected());
         String rgb = String.format("%d,%d, %d",robot.beacon.red(),robot.beacon.green(), robot.beacon.blue());
         telemetry.addData("RGB: ", rgb);
@@ -171,6 +171,10 @@ public class HolonomicDrive extends OpMode{
             robot.fireCatapult();
         } else if(gamepad1.left_trigger > 0.5) {
             robot.stopPrime();
+        }
+
+        if(!robot.cam.isBusy()){
+            robot.cam.setPower(0);
         }
     }
 
