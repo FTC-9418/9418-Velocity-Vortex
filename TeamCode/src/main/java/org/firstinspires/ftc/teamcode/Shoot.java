@@ -51,16 +51,13 @@ public class Shoot extends LinearOpMode {
   private int initialDriveTime = 1200;
   private int finalDriveTime   = 1000;
 
-
-  public Shoot() {
-
-  }
-
   @Override
   public void runOpMode() {
 
     Hardware robot = new Hardware();
     robot.init(hardwareMap);
+
+    robot.gate(false);
 
     // wait for the start button to be pressed.
     telemetry.addData("Mode ", "waiting...");
@@ -73,18 +70,7 @@ public class Shoot extends LinearOpMode {
     sleep(initialDriveTime);
     robot.drive(Hardware.Direction_Stop, 0);
 
-    //robot.initCatapult();
-    //primeTrigger(robot);
-
-    robot.fireCatapult();
-
-    robot.intake.setPower(1);
-
-    sleep(1500);
-
-    robot.intake.setPower(0);
-
-    robot.fireCatapult();
+    robot.firetwice();
 
     robot.drive(Hardware.Direction_Left, 0.5);
     sleep(finalDriveTime);

@@ -71,9 +71,10 @@ public abstract class BeaconPress extends LinearOpMode {
     // wait for the start button to be pressed.
     telemetry.addData("Mode ", "waiting...");
     telemetry.update();
-    //wiggle(robot, 500);
+
 
     waitForStart();
+
 
     telemetry.update();
     robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
