@@ -1,25 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
- * This is NOT an opmode.
  *
  * This class can be used to define all the specific hardware for a single robot.
  *
  */
-public class Hardware
-{
+public class Hardware {
+
     public DcMotor fl     = null;
     public DcMotor bl     = null;
     public DcMotor fr     = null;
@@ -27,11 +24,10 @@ public class Hardware
     public DcMotor intake = null;
     public DcMotor cam    = null;
     public Servo   push   = null;
+    public Servo   gate   = null;
     public ColorSensor beacon;
     public LightSensor floor;
     public TouchSensor touch;
-
-    //public ModernRoboticsI2cColorSensor
 
     public static final double MID_SERVO =  0.5;
 
@@ -40,12 +36,13 @@ public class Hardware
     private ElapsedTime period  =  new ElapsedTime();
 
     /* Constructor */
-    public Hardware(){
+    public Hardware() {
 
     }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
+
         // Save reference to Hardware map
         hwMap = ahwMap;
 
@@ -57,7 +54,6 @@ public class Hardware
 
         // Define and Initialize cam
         cam = hwMap.dcMotor.get("cam");
-        cam.setDirection(DcMotor.Direction.REVERSE);
 
         // Define and Initialize intake
         intake = hwMap.dcMotor.get("intake");
@@ -70,9 +66,6 @@ public class Hardware
         cam.setPower(0);
         intake.setPower(0);
 
-        // Set maximum speed of the cam
-        //cam.setMaxSpeed(400);
-
         // Set drivetrain motors to run without encoders.
         fr.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -82,7 +75,6 @@ public class Hardware
         // Set cam motor to run with encoders
         cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //cam.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set motor direction
         fr.setDirection(DcMotor.Direction.REVERSE);
@@ -90,13 +82,16 @@ public class Hardware
         br.setDirection(DcMotor.Direction.REVERSE);
         bl.setDirection(DcMotor.Direction.FORWARD);
 
+        cam.setDirection(DcMotor.Direction.FORWARD);
 
         // Define and initialize installed servos.
         push = hwMap.servo.get("push");
         push.setPosition(MID_SERVO);
 
+        gate = hwMap.servo.get("gate");
+        gate.setPosition(Servo.MIN_POSITION);
+
         beacon = hwMap.colorSensor.get("beacon"); //address 0x3c - default
-        //beacon.setI2cAddress(new I2cAddr(0x3c/2));
         beacon.enableLed(false);
 
         floor = hwMap.lightSensor.get("Light Sensor");
@@ -153,6 +148,14 @@ public class Hardware
         return (floor.getLightDetected() > threshold);
     }
 
+    public void fireCatapult() {
+        int start_pos = cam.getCurrentPosition();
+
+        cam.setTargetPosition(start_pos + 1120);
+        cam.setPower(0.5);
+
+    }
+
     /***
      *
      * waitForTick implements a periodic delay. However, this acts like a metronome with a regular
@@ -162,7 +165,6 @@ public class Hardware
      * @param periodMs  Length of wait cycle in mSec.
      */
     public void waitForTick(long periodMs) {
-
         long  remaining = periodMs - (long)period.milliseconds();
 
         // sleep for the remaining portion of the regular cycle period.
@@ -176,64 +178,6 @@ public class Hardware
 
         // Reset the cycle clock for the next pass.
         period.reset();
-    }
-    public void fireCatapult() {
-        /*if(primeStep >= 0) {
-            return;
-        }
-        primeStep = 0;
-        endPosition = 506;
-        cam.setTargetPosition(steps[primeStep]);
-        cam.setPower(0.8);*/
-
-        int start_pos = cam.getCurrentPosition();
-
-        cam.setTargetPosition(start_pos + 560);
-        cam.setPower(.1);
-
-        /*while(Math.abs(cam.getCurrentPosition() - start_pos) < 500){
-            cam.setPower(.1);
-        }
-        cam.setPower(0);*/
-    }
-
-    public void initCatapult() {
-        if(primeStep >= 0) {
-            return;
-        }
-        primeStep = 0;
-        endPosition = 560;
-        cam.setTargetPosition(steps[primeStep]);
-        cam.setPower(0.8);
-    }
-
-    private int primeStep = -1;
-    private int [] steps = {450, 500, 540, 560};
-    private int endPosition = 560;
-
-    public boolean primeTrigger() {
-        if(primeStep < 0) {
-            return true;
-        }
-        if(Math.abs(cam.getTargetPosition() - cam.getCurrentPosition()) > 5) {
-            cam.setPower(1.0);
-        } else {
-            primeStep++;
-            if(primeStep >= steps.length || steps[primeStep] > endPosition) {
-                stopPrime();
-            } else {
-                cam.setTargetPosition(steps[primeStep]);
-            }
-        }
-        return primeStep < 0;
-    }
-
-    public void stopPrime() {
-        cam.setPower(0);
-        cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        cam.setTargetPosition(0);
-        primeStep = -1;
     }
 }
 
