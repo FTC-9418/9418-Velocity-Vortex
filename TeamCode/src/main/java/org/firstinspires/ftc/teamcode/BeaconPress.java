@@ -119,8 +119,6 @@ public abstract class BeaconPress extends LinearOpMode {
     robot.drive(hitBallDirection, pwr);
     sleep(milliseconds);
     robot.stop();
-    robot.initCatapult();
-    primeTrigger(robot);
   }
 
   private void findWall(Hardware robot) {
@@ -155,11 +153,7 @@ public abstract class BeaconPress extends LinearOpMode {
     sleep(500);
     robot.push.setPosition(0.5);
   }
-
-  private void primeTrigger(Hardware robot) {
-    while(!robot.primeTrigger() && !isStopRequested()) {
-      sleep(10);
-    }
-  }
-
 }
+
+
+

@@ -521,7 +521,7 @@ public class FtcRobotControllerActivity extends Activity {
         @Override
         public void onMenuVisibilityChanged(boolean isVisible) {
           if (isVisible) {
-            dimmer.handleDimTimer();
+            //dimmer.handleDimTimer();
           }
         }
       });

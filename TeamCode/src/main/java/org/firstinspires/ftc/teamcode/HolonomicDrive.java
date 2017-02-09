@@ -92,6 +92,7 @@ public class HolonomicDrive extends OpMode{
         drive();
         intake();
         push();
+        gate();
         color();
         cam();
         //robot.primeTrigger();
@@ -169,11 +170,7 @@ public class HolonomicDrive extends OpMode{
     public void cam() {
         if(gamepad1.y) {
             robot.fireCatapult();
-        } else if(gamepad1.left_trigger > 0.5) {
-            robot.stopPrime();
-        }
-
-        if(!robot.cam.isBusy()){
+        } else if(!robot.cam.isBusy()){
             robot.cam.setPower(0);
         }
     }
@@ -185,6 +182,13 @@ public class HolonomicDrive extends OpMode{
             robot.push.setPosition(0);
         } else {
             robot.push.setPosition(0.5);
+        }
+    }
+    public void gate() {
+        if (gamepad1.right_trigger > 0.5) {
+            robot.gate.setPosition(0);
+        } else {
+            robot.gate.setPosition(0.3);
         }
     }
 
