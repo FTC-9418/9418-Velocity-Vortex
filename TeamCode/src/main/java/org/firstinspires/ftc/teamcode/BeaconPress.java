@@ -52,6 +52,8 @@ public abstract class BeaconPress extends LinearOpMode {
   private int driveTime = 2100;
   private int searchDirection = Hardware.Direction_Left;
   private int hitBallDirection = Hardware.Direction_ReverseRight;
+  private int rotateDirection = Hardware.Direction_RotateRight;
+  private int unRotateDirection = Hardware.Direction_RotateLeft;
 
   public BeaconPress(boolean lookForRed) {
       this.lookForRed = lookForRed;
@@ -59,6 +61,8 @@ public abstract class BeaconPress extends LinearOpMode {
       this.searchDirection = Hardware.Direction_Right;
       this.hitBallDirection = Hardware.Direction_ReverseLeft;
       this.driveTime = 2800;
+      this.rotateDirection = Hardware.Direction_RotateLeft;
+      this.unRotateDirection = Hardware.Direction_RotateRight;
     }
   }
 
@@ -75,50 +79,61 @@ public abstract class BeaconPress extends LinearOpMode {
 
     waitForStart();
 
+    postBeacon(robot);
 
-    telemetry.update();
-    robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
-    sleep(driveTime);
-    findWall(robot);
-
-    robot.stop();
-
-    // loop and read the RGB data.
-    // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
-    int presses = 0;
-    while (opModeIsActive() && presses < 2)  {
-
-      robot.drive(searchDirection, 0.3);
-
-      telemetry.addData("Mode ", "Search...");
-      telemetry.addData("Red ", robot.beacon.red());
-      telemetry.addData("Blu ", robot.beacon.blue());
-      telemetry.update();
-
-      if (robot.isFloorLineDetected(floor_threshold)){
-        telemetry.addData("Light: ", robot.floor.getLightDetected());
-        pressBeacon(robot);
-        presses++;
-        if (presses < 2) {
-          robot.drive(Hardware.Direction_Reverse, 0.3);
-          sleep(200);
-          robot.drive(searchDirection, 0.5);
-          sleep(500);
-        } else if (presses == 2) {
-          postBeacon(robot, hitBallDirection, 0.7, 2900);
-          break;
-        }
-      }
-
-      if (!robot.touch.isPressed()){
-        findWall(robot);
-      }
-    }
+//
+//
+//    telemetry.update();
+//    robot.drive(Hardware.Direction_Forward | searchDirection, 0.5);
+//    sleep(driveTime);
+//    findWall(robot);
+//
+//    robot.stop();
+//
+//    // loop and read the RGB data.
+//    // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
+//    int presses = 0;
+//    while (opModeIsActive() && presses < 2)  {
+//
+//      robot.drive(searchDirection, 0.3);
+//
+//      telemetry.addData("Mode ", "Search...");
+//      telemetry.addData("Red ", robot.beacon.red());
+//      telemetry.addData("Blu ", robot.beacon.blue());
+//      telemetry.update();
+//
+//      if (robot.isFloorLineDetected(floor_threshold)){
+//        telemetry.addData("Light: ", robot.floor.getLightDetected());
+//        pressBeacon(robot);
+//        presses++;
+//        if (presses < 2) {
+//          robot.drive(Hardware.Direction_Reverse, 0.3);
+//          sleep(200);
+//          robot.drive(searchDirection, 0.5);
+//          sleep(500);
+//        } else if (presses == 2) {
+//          postBeacon(robot);
+//          break;
+//        }
+//      }
+//
+//      if (!robot.touch.isPressed()){
+//        findWall(robot);
+//      }
+//    }
   }
 
-  private void postBeacon(Hardware robot, int hitBallDirection, double pwr, int milliseconds) {
-    robot.drive(hitBallDirection, pwr);
-    sleep(milliseconds);
+  private void postBeacon(Hardware robot) {
+    robot.drive(hitBallDirection, .7);
+    sleep(1000);
+    robot.drive(rotateDirection, .7);
+    sleep(1000);
+    robot.stop();
+    robot.firetwice();
+    robot.drive(unRotateDirection, .7);
+    sleep(1000);
+    robot.drive(hitBallDirection, .7);
+    sleep(2000);
     robot.stop();
   }
 
