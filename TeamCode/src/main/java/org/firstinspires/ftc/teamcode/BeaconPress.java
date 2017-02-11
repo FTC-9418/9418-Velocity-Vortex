@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  *
@@ -51,6 +52,7 @@ public abstract class BeaconPress extends LinearOpMode {
   private float floor_threshold = 0.3f;
   private int driveTime = 2500;
   private int searchDirection = Hardware.Direction_Left;
+  private int unSearchDirection = Hardware.Direction_Right;
   private int hitBallDirection = Hardware.Direction_ReverseRight;
   private int rotateDirection = Hardware.Direction_RotateRight;
   private int unRotateDirection = Hardware.Direction_RotateLeft;
@@ -60,9 +62,10 @@ public abstract class BeaconPress extends LinearOpMode {
       this.lookForRed = lookForRed;
     if (lookForRed){
       this.searchDirection = Hardware.Direction_Right;
+      this.unSearchDirection = Hardware.Direction_Left;
       this.hitBallDirection = Hardware.Direction_ReverseLeft;
       this.driveTime = 2800;
-      this.rotateTime = 400;
+      this.rotateTime = 350;
     }
   }
 
@@ -86,6 +89,7 @@ public abstract class BeaconPress extends LinearOpMode {
 
     robot.stop();
 
+    ElapsedTime period  =  new ElapsedTime();
     // loop and read the RGB data.
     // Note we use opModeIsActive() as our loop condition because it is an interruptible method.
     int presses = 0;
@@ -102,11 +106,12 @@ public abstract class BeaconPress extends LinearOpMode {
         telemetry.addData("Light: ", robot.floor.getLightDetected());
         pressBeacon(robot);
         presses++;
+        period.reset();
         if (presses < 2) {
           robot.drive(Hardware.Direction_Reverse, 0.3);
           sleep(200);
           robot.drive(searchDirection, 0.5);
-          sleep(500);
+          sleep(800);
         } else if (presses == 2) {
           postBeacon(robot);
           break;
@@ -119,11 +124,15 @@ public abstract class BeaconPress extends LinearOpMode {
       if (!robot.touch.isPressed()){
         foundLine = findWall(robot);
       }
-
+      if (period.milliseconds() > 10000 && presses > 0){
+        searchDirection = unSearchDirection;
+      }
       if(!foundLine){
         robot.drive(searchDirection, 0.3);
       }
+
     }
+
   }
 
   private void postBeacon(Hardware robot) {

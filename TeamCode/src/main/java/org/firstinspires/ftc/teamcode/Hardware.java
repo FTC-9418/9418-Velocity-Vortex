@@ -72,9 +72,7 @@ public class Hardware {
         br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Set cam motor to run with encoders
-        cam.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        cam.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        cam.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Set motor direction
         fr.setDirection(DcMotor.Direction.REVERSE);
@@ -149,11 +147,21 @@ public class Hardware {
     }
 
     public void fireCatapult() {
-        int start_pos = cam.getCurrentPosition();
+        fireCatapult(false);
+    }
 
-        cam.setTargetPosition(start_pos + 1120);
+    public void fireCatapult(boolean longer) {
         cam.setPower(0.5);
-
+        sleep(700 + (longer ? 200 : 0));
+        cam.setPower(0);
+    }
+    public void firetwice() {
+        fireCatapult(true);
+        gate(true);
+        intake.setPower(1);
+        sleep(2000);
+        intake.setPower(0);
+        fireCatapult(true);
     }
 
     /***
@@ -178,6 +186,23 @@ public class Hardware {
 
         // Reset the cycle clock for the next pass.
         period.reset();
+    }
+
+    public void gate(boolean isopen) {
+        if (isopen) {
+            gate.setPosition(0);
+        } else {
+            gate.setPosition(0.3);
+        }
+    }
+
+
+    public final void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }
 
