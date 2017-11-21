@@ -59,7 +59,7 @@ public abstract class BeaconPress extends LinearOpMode {
   private int rotateTime = 800;
 
   public BeaconPress(boolean lookForRed) {
-      this.lookForRed = lookForRed;
+    this.lookForRed = lookForRed;
     if (lookForRed){
       this.searchDirection = Hardware.Direction_Right;
       this.unSearchDirection = Hardware.Direction_Left;
